@@ -1,6 +1,9 @@
 import json
+import sys
 
-with open('response_all.json') as f:
+filename = sys.argv[1] if len(sys.argv) > 1 else 'products.json'
+
+with open(filename) as f:
     data = json.load(f)
 
 parts = data.get('parts', [])
