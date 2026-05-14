@@ -287,9 +287,15 @@ def scrape_items(scraper: CatalogScraper, batch_size: int = 100, verbose: bool =
             else:
                 print(f"[{idx}/{len(batch)}] Scraping: {part_number}...", end=' ', flush=True)
 
-            # Fetch the page
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
+            # Fetch the page, retrying once on network error
+            try:
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
+            except requests.RequestException:
+                print(f"retrying...", end=' ', flush=True)
+                time.sleep(2)
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
 
             # Parse HTML
             soup = BeautifulSoup(response.content, 'html.parser')
